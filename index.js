@@ -1,12 +1,15 @@
 const Runner = require(`./src/Runner`)
-const { debug, config, getDb } = require(`./src/util`)
+const { debug, getDb, getProviders } = require(`./src/util`)
 
-const main = async (db = getDb()) => {
-  for (const provider of config.scraper.providers) {
-    // eslint-disable-next-line import/no-dynamic-require, global-require
-    await new Runner(require(`./providers/${provider}`), db).run()
+const main = async (db = getDb(), providers = getProviders()) => {
+  for (const provider of providers) {
+    try {
+      await new Runner(provider, db).run()
+    } catch (err) {
+      debug(`error`, err)
+    }
   }
-  debug(`finished running`)
+  debug(`all providers done`)
 }
 if (require.main === module) {
   main()

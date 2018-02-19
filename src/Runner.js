@@ -1,13 +1,11 @@
-// import scrapeIt from 'scrape-it'
 const scrapeIt = require(`scrape-it`)
-const { debug } = require(`./util`)
-
-const UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36`
+const { debug, config } = require(`./util`)
 
 class Runner {
-  constructor(provider, db) {
+  constructor(provider, db, userAgent = config.scraper.userAgent) {
     this.provider = provider
     this.db = db
+    this.userAgent = userAgent
   }
 
   async run() {
@@ -26,12 +24,12 @@ class Runner {
     const gen = pages()
     let url = gen.next().value
     for (;;) {
-      debug(`fetching`, url)
+      debug(`fetching %s`, url)
       const items = flatten(
         await scrapeIt(
           {
             url,
-            headers: { 'User-Agent': UA },
+            headers: { 'User-Agent': this.userAgent },
           },
           schema
         )
@@ -49,7 +47,7 @@ class Runner {
     const { db } = this
     const { name, url } = this.provider
     const exists = !!(await db(`source`).where(`name`, name)).length
-    debug(`source`, { name, url })
+    debug(`source %o`, { name, url })
     if (!exists) {
       await db(`source`).insert({
         name,

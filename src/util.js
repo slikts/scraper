@@ -12,8 +12,13 @@ const getDb = (url = config.db.url) =>
     connection: url,
   })
 
+const getProviders = (providers = config.scraper.providers) =>
+  // eslint-disable-next-line import/no-dynamic-require, global-require
+  providers.map(provider => require(`${__dirname}/../providers/${provider}`))
+
 module.exports = {
   debug,
   getDb,
+  getProviders,
   config,
 }

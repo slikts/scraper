@@ -3,3 +3,4 @@ url = "postgres://localhost/scraper"
 
 [scraper]
 providers = ["Foo"]
+userAgent = "scraper"
