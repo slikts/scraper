@@ -1,3 +1,6 @@
+const Provider = require(`../src/Provider`)
+const { parseEp } = require(`../src/util`)
+
 const itemSchema = {
   listItem: `dd a`,
   data: {
@@ -6,7 +9,7 @@ const itemSchema = {
     },
     chapter: {
       how: `html`,
-      convert: x => +x.trim().match(/\d+(?:\.\d+)?$/)[0],
+      convert: parseEp,
     },
   },
 }
@@ -31,8 +34,9 @@ const titleSchema = {
   },
 }
 
-class ReadMangaToday {
-  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 10 } = {}) {
+class ReadMangaToday extends Provider {
+  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages } = {}) {
+    super(maxPages)
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base
@@ -55,13 +59,6 @@ class ReadMangaToday {
         }))
       )
       .reduce((a, b) => a.concat(b), [])
-  }
-
-  *pages() {
-    const makeUrl = n => `${this.base}${n > 1 ? `/${n}` : ``}`
-    for (let i = 1; i <= this.maxPages; i += 1) {
-      yield makeUrl(i)
-    }
   }
 }
 

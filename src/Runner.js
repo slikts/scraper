@@ -3,17 +3,9 @@ const { debug, config } = require(`./util`)
 
 class Runner {
   constructor(provider, db, userAgent = config.scraper.userAgent) {
-    if (!Runner.validateProvider(provider)) {
-      throw TypeError(`Provider interface mismatch`)
-    }
     this.provider = provider
     this.db = db
     this.userAgent = userAgent
-  }
-
-  static validateProvider(provider) {
-    const proto = Object.getPrototypeOf(provider)
-    return [`pages`, `flatten`].every(a => proto[a])
   }
 
   async run() {
@@ -30,24 +22,27 @@ class Runner {
   async *fetchItems() {
     const { provider, provider: { schema } } = this
     const gen = provider.pages()
-    let url = gen.next().value
+    let pageOpts = gen.next().value
     for (;;) {
-      debug(`fetching %s`, url)
+      debug(`fetching %o`, pageOpts)
       const items = provider.flatten(
         await scrapeIt(
           {
-            url,
-            headers: { 'User-Agent': this.userAgent },
+            ...pageOpts,
+            headers: {
+              ...(pageOpts.headers || {}),
+              'User-Agent': this.userAgent,
+            },
           },
           schema
         )
       )
       const next = gen.next(items)
-      yield { items, url }
+      yield { items, url: pageOpts.url }
       if (next.done) {
         break
       }
-      url = next.value
+      pageOpts = next.value
     }
   }
 
