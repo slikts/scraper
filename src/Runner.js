@@ -3,9 +3,17 @@ const { debug, config } = require(`./util`)
 
 class Runner {
   constructor(provider, db, userAgent = config.scraper.userAgent) {
+    if (!Runner.validateProvider(provider)) {
+      throw TypeError(`Provider interface mismatch`)
+    }
     this.provider = provider
     this.db = db
     this.userAgent = userAgent
+  }
+
+  static validateProvider(provider) {
+    const proto = Object.getPrototypeOf(provider)
+    return [`pages`, `flatten`].every(a => proto[a])
   }
 
   async run() {

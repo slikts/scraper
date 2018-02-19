@@ -32,7 +32,7 @@ const titleSchema = {
 }
 
 class ReadMangaToday {
-  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 10 }) {
+  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 10 } = {}) {
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base
