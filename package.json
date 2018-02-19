@@ -9,8 +9,10 @@
     "knex": "^0.14.2",
     "osmosis": "^1.1.6",
     "pg": "^7.4.1",
+    "pg-connection-string": "^2.0.0",
     "prettier": "^1.10.2",
-    "scrape-it": "^4.1.2"
+    "scrape-it": "^4.1.2",
+    "toml": "^2.3.3"
   },
   "scripts": {
     "test": "node --harmony_async_iteration node_modules/.bin/ava"
