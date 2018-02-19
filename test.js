@@ -14,7 +14,7 @@ test(`foo`, async t => {
   // const xxx = await scrapeIt(pages.next().value, Reader.schema)
   // t.log(xxx.titles[1])
   // t.log(result)
-  // t.pass()
+  t.pass()
 })
 
 // test('bar', async t => {

@@ -15,4 +15,5 @@ const getDb = (url = config.db.url) =>
 module.exports = {
   debug,
   getDb,
+  config,
 }
