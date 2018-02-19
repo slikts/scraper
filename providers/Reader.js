@@ -1,12 +1,3 @@
-module.exports = { abc: 1 }
-
-const source = {
-  name: `ReadMangaToday`,
-  url: `http://readmanga.today/`,
-  // base: `https://sile.untu.ms/scrape/latest-releases.html`,
-  base: `https://www.readmng.com/latest-releases`,
-}
-
 const itemSchema = {
   listItem: `dd a`,
   data: {
@@ -40,33 +31,38 @@ const titleSchema = {
   },
 }
 
-const flatten = ({ titles }) =>
-  titles
-    .map(({ name, date, items }) =>
-      items.map(({ url, chapter }) => ({
-        key: url,
-        time: date,
-        group: name,
-        data: {
-          chapter,
-        },
-        source: source.name,
-        name: `${name} ${chapter}`,
-      }))
-    )
-    .reduce((a, b) => a.concat(b), [])
+class ReadMangaToday {
+  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 10 }) {
+    this.name = `ReadMangaToday`
+    this.url = `http://readmanga.today/`
+    this.base = base
+    this.schema = titleSchema
+    this.maxPages = maxPages
+  }
 
-const makeUrl = n => `${source.base}${n > 1 ? `/${n}` : ``}`
-const maxPages = 10
-const pages = function*() {
-  for (let i = 1; i <= maxPages; i += 1) {
-    yield makeUrl(i)
+  flatten({ titles }) {
+    return titles
+      .map(({ name, date, items }) =>
+        items.map(({ url, chapter }) => ({
+          key: url,
+          time: date,
+          group: name,
+          data: {
+            chapter,
+          },
+          source: this.name,
+          name: `${name} ${chapter}`,
+        }))
+      )
+      .reduce((a, b) => a.concat(b), [])
+  }
+
+  *pages() {
+    const makeUrl = n => `${this.base}${n > 1 ? `/${n}` : ``}`
+    for (let i = 1; i <= this.maxPages; i += 1) {
+      yield makeUrl(i)
+    }
   }
 }
 
-module.exports = {
-  ...source,
-  pages,
-  schema: titleSchema,
-  flatten,
-}
+module.exports = ReadMangaToday

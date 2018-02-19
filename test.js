@@ -2,18 +2,13 @@ import test from 'ava'
 // import knex from 'knex'
 import Reader from './providers/Reader'
 import Runner from './src/Runner'
+import { getDb, debug } from './src/util'
 
-// const pg = knex({
-//   client: `pg`,
-//   connection: process.env.PG_CONNECTION_STRING,
-//   searchPath: [`knex`, `public`],
-// })
+const run = provider => new Runner(provider, getDb()).run()
 
-test(`foo`, async t => {
-  // const pages = Reader.pages()
-  // const xxx = await scrapeIt(pages.next().value, Reader.schema)
-  // t.log(xxx.titles[1])
-  // t.log(result)
+test(`Reader`, async t => {
+  // await run({ ...Reader, base: `https://sile.untu.ms/scrape/latest-releases.html` })
+  debug({ ...Reader, base: `https://sile.untu.ms/scrape/latest-releases.html` })
   t.pass()
 })
 
