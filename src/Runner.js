@@ -20,12 +20,12 @@ class Runner {
   }
 
   async *fetchItems() {
-    const { pages, schema, flatten } = this.provider
-    const gen = pages()
+    const { provider, provider: { schema } } = this
+    const gen = provider.pages()
     let url = gen.next().value
     for (;;) {
       debug(`fetching %s`, url)
-      const items = flatten(
+      const items = provider.flatten(
         await scrapeIt(
           {
             url,

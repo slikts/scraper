@@ -7,8 +7,8 @@ import { getDb, debug } from './src/util'
 const run = provider => new Runner(provider, getDb()).run()
 
 test(`Reader`, async t => {
-  // await run({ ...Reader, base: `https://sile.untu.ms/scrape/latest-releases.html` })
-  debug({ ...Reader, base: `https://sile.untu.ms/scrape/latest-releases.html` })
+  await run(new Reader({ base: `https://sile.untu.ms/scrape/latest-releases.html` }))
+  // debug({ ...Reader, base: `https://sile.untu.ms/scrape/latest-releases.html` })
   t.pass()
 })
 
