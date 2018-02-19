@@ -1,0 +1,5 @@
+[db]
+url = "postgres://localhost/scraper"
+
+[scraper]
+providers = ["Foo"]
