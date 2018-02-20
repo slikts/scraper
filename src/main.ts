@@ -1,6 +1,6 @@
-import Runner from './Runner'
-import { ProviderConstructor } from './Provider'
-import { debug, getDb, getProviderConstructors } from './util'
+import Runner from "./Runner"
+import { ProviderConstructor } from "./Provider"
+import { debug, getDb, getProviderConstructors } from "./util"
 
 const main = async (db = getDb(), constructors?: ProviderConstructor[]) => {
   if (!constructors) {
@@ -14,6 +14,8 @@ const main = async (db = getDb(), constructors?: ProviderConstructor[]) => {
     }
   }
   debug(`all providers done`)
+  // XXX
+  process.exit()
 }
 if (require.main === module) {
   main()
