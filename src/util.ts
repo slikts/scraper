@@ -27,8 +27,16 @@ export const range = function*(a: number, b: number): IterableIterator<number> {
   }
 }
 
+// declare module 'form-data' {
+//   export default interface FormData {
+//     LINE_BREAK: String
+//   }
+// }
+
 export const buildFormBody = (formData: FormData, fields: {[key: string]: string | number}) =>
   Object.entries(fields)
+    // @ts-ignore
     .map(([field, value]) => [formData._multiPartHeader(field, value, {}), value].join(``))
     .concat(``)
+    // @ts-ignore
     .join(FormData.LINE_BREAK) + formData._lastBoundary()

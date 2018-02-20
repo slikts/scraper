@@ -5,6 +5,7 @@ import FormData from 'form-data'
 import Item from '../Item'
 import { ScrapeOptions } from 'scrape-it'
 
+
 const schema: ScrapeOptions = {
   items: {
     listItem: `.ep-box`,

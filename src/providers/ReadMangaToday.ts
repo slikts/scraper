@@ -22,7 +22,7 @@ const titleSchema: ScrapeOptions = {
       name: `.manga_info`,
       date: {
         selector: `.time`,
-        convert: (x: String) =>
+        convert: (x: string) =>
           new Date(
             x
               .split(`/`)
@@ -36,20 +36,20 @@ const titleSchema: ScrapeOptions = {
 }
 
 interface SchemaTitle {
-  name: String
+  name: string
   date: Date
   items: Array<SchemaItem>
 }
 
 interface SchemaItem {
-  url: String
+  url: string
   chapter: number
 }
 
 class ReadMangaToday implements Provider {
-  name: String
-  url: String
-  base: String
+  name: string
+  url: string
+  base: string
   schema: ScrapeOptions
   maxPages: number
   constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {

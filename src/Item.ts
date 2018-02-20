@@ -1,8 +1,8 @@
 export default interface Item {
-  readonly key: String
-  readonly group: String
-  readonly source: String
+  readonly key: string
+  readonly group: string
+  readonly source: string
   readonly time: Date
-  readonly name: String
+  readonly name: string
   readonly data: Object
 }
