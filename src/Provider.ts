@@ -15,3 +15,7 @@ export default interface Provider {
   flatten(a: Object): Item[]
   pages(): IterableIterator<Page>
 }
+
+export interface ProviderConstructor {
+  new(a?: Object): Provider
+}

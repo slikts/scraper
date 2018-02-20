@@ -5,6 +5,7 @@
   "license": "MIT",
   "dependencies": {
     "@slikts/tsconfig": "^1.0.1",
+    "@types/debug": "0.0.30",
     "@types/form-data": "^2.2.1",
     "@types/knex": "^0.14.7",
     "@types/node": "^9.4.6",
