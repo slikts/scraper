@@ -55,7 +55,7 @@ export default class OtakuStream implements Provider {
   }
 
   // eslint-disable-next-line class-methods-use-this
-  flatten({ items }: { items: SchemaItem[]}): Item[] {
+  flatten({ data: { items } }: { data: { items: SchemaItem[] } }): Item[] {
     return items.map(({ group, key, time, episode, seriesUrl }) => ({
       key,
       time,

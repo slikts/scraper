@@ -27,9 +27,11 @@ export const getDb = (url = config.db.url): knex =>
     connection: url,
   })
 
-export const getProviderConstructors = (providers: string[] = config.scraper.providers): ProviderConstructor[] =>
-  // eslint-disable-next-line import/no-dynamic-require, global-require
-  providers.map(provider => require(`${__dirname}/providers/${provider}`))
+export const getProviderConstructors = async (providers: string[] = config.scraper.providers): Promise<ProviderConstructor[]> => {
+  const names = providers.map(provider => `${__dirname}/providers/${provider}`)
+  const modules = await Promise.all(names.map(a => import(a)))
+  return modules.map(module => module.default)
+}
 
 export const parseEp = (a: string): number => +(a.trim().match(/\d+(?:\.\d+)?$/) || [])[0]
 

@@ -4,7 +4,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@slikts/scrape-it": "^5.0.3",
     "@slikts/tsconfig": "^1.0.1",
+    "@types/cheerio": "^0.22.7",
     "@types/debug": "0.0.30",
     "@types/form-data": "^2.2.1",
     "@types/knex": "^0.14.7",
@@ -18,12 +20,15 @@
     "pg": "^7.4.1",
     "pg-connection-string": "^2.0.0",
     "prettier": "^1.10.2",
-    "scrape-it": "^4.1.2",
+    "scrape-it": "^5.0.2",
     "toml": "^2.3.3",
+    "ts-node": "^5.0.0",
     "typescript": "^2.7.2"
   },
   "scripts": {
-    "test": "node --harmony_async_iteration node_modules/.bin/ava"
+    "test": "node --harmony_async_iteration node_modules/.bin/ava",
+    "main": "node --harmony -r ts-node/register src/main.ts",
+    "debug-watch": "DEBUG=scraper nodemon --harmony -r ts-node/register src/main.ts"
   },
   "devDependencies": {
     "@slikts/eslint-config-prettier": "^4.0.0",

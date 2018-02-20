@@ -1,4 +1,4 @@
-import scrapeIt from 'scrape-it'
+import scrapeIt from '@slikts/scrape-it'
 import { debug, config } from './util'
 import Provider from './Provider'
 import knex from 'knex'
@@ -30,7 +30,7 @@ export default class Runner {
     for (;;) {
       debug(`fetching %o`, pageOpts.url)
       const items = provider.flatten(
-        await scrapeIt(
+        <{ data: Object }> await scrapeIt(
           {
             ...pageOpts,
             headers: {

@@ -12,7 +12,7 @@ export default interface Provider {
   readonly base: string
   readonly schema: ScrapeOptions
   readonly maxPages: number
-  flatten(a: Object): Item[]
+  flatten(a: { data: Object }): Item[]
   pages(): IterableIterator<Page>
 }
 

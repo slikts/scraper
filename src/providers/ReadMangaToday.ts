@@ -1,5 +1,5 @@
 import Provider from '../Provider'
-import { range, parseEp } from '../util'
+import { debug, range, parseEp } from '../util'
 import { ScrapeOptions } from 'scrape-it'
 
 const itemSchema = {
@@ -35,24 +35,25 @@ const titleSchema: ScrapeOptions = {
   },
 }
 
-interface SchemaTitle {
+export interface SchemaTitle {
   name: string
   date: Date
-  items: Array<SchemaItem>
+  items: SchemaItem[]
 }
 
-interface SchemaItem {
+export interface SchemaItem {
   url: string
   chapter: number
 }
 
-class ReadMangaToday implements Provider {
+export default class ReadMangaToday implements Provider {
   name: string
   url: string
   base: string
   schema: ScrapeOptions
   maxPages: number
   constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {
+  // constructor({ base = `https://sile.untu.ms/scrape/latest-releases.html`, maxPages = 3 } = {}) {
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base
@@ -60,7 +61,7 @@ class ReadMangaToday implements Provider {
     this.maxPages = maxPages
   }
 
-  flatten({ titles }: { titles: SchemaTitle[] }) {
+  flatten({ data: { titles } }: { data: { titles: SchemaTitle[] } }) {
     return titles
       .map(({ name, date, items }) =>
         items.map(({ url, chapter }) => ({
