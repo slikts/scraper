@@ -1,8 +1,11 @@
-const scrapeIt = require(`scrape-it`)
-const { debug, config } = require(`./util`)
+import scrapeIt from 'scrape-it'
+import { debug, config } from './util'
+import Provider from './Provider'
+import knex from 'knex'
 
-class Runner {
-  constructor(provider, db, userAgent = config.scraper.userAgent) {
+
+export default class Runner {
+  constructor(readonly provider: Provider, readonly db: knex, readonly userAgent = config.scraper.userAgent) {
     this.provider = provider
     this.db = db
     this.userAgent = userAgent
@@ -24,7 +27,7 @@ class Runner {
     const gen = provider.pages()
     let pageOpts = gen.next().value
     for (;;) {
-      debug(`fetching %o`, pageOpts)
+      debug(`fetching %o`, pageOpts.url)
       const items = provider.flatten(
         await scrapeIt(
           {
@@ -77,4 +80,4 @@ class Runner {
   }
 }
 
-module.exports = Runner
+// module.exports = Runner

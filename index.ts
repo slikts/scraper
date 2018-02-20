@@ -1,5 +1,5 @@
-const Runner = require(`./src/Runner`)
-const { debug, getDb, getProviders } = require(`./src/util`)
+import Runner from './src/Runner'
+import { debug, getDb, getProviders } from './src/util'
 
 const main = async (db = getDb(), providers = getProviders()) => {
   for (const Provider of providers) {

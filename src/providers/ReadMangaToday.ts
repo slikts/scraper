@@ -1,5 +1,5 @@
-const Provider = require(`../src/Provider`)
-const { parseEp } = require(`../src/util`)
+import Provider from '../Provider'
+import { range, parseEp } from '../util'
 
 const itemSchema = {
   listItem: `dd a`,
@@ -21,7 +21,7 @@ const titleSchema = {
       name: `.manga_info`,
       date: {
         selector: `.time`,
-        convert: x =>
+        convert: (x: String) =>
           new Date(
             x
               .split(`/`)
@@ -34,9 +34,24 @@ const titleSchema = {
   },
 }
 
-class ReadMangaToday extends Provider {
-  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages } = {}) {
-    super(maxPages)
+interface SchemaTitle {
+  name: String
+  date: Date
+  items: Array<SchemaItem>
+}
+
+interface SchemaItem {
+  url: String
+  chapter: number
+}
+
+class ReadMangaToday implements Provider {
+  name: String
+  url: String
+  base: String
+  schema: Object
+  maxPages: number
+  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base
@@ -44,7 +59,7 @@ class ReadMangaToday extends Provider {
     this.maxPages = maxPages
   }
 
-  flatten({ titles }) {
+  flatten({ titles }: { titles: SchemaTitle[] }) {
     return titles
       .map(({ name, date, items }) =>
         items.map(({ url, chapter }) => ({
@@ -60,6 +75,11 @@ class ReadMangaToday extends Provider {
       )
       .reduce((a, b) => a.concat(b), [])
   }
-}
 
-module.exports = ReadMangaToday
+  *pages() {
+    const makeUrl = (n: number) => ({
+      url: `${this.base}${n > 1 ? `/${n}` : ``}`,
+    })
+    yield* [...range(1, this.maxPages)].map(makeUrl)
+  }
+}

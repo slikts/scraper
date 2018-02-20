@@ -1,7 +1,8 @@
-const Provider = require(`../src/Provider`)
-const { debug, parseEp, range, buildFormBody } = require(`../src/util`)
-const { parseDate } = require(`chrono-node`)
-const FormData = require(`form-data`)
+import Provider from '../Provider'
+import { debug, parseEp, range, buildFormBody } from '../util'
+import { parseDate } from 'chrono-node'
+import FormData from 'form-data'
+import Item from '../Item'
 
 const schema = {
   items: {
@@ -28,18 +29,31 @@ const schema = {
   },
 }
 
-class OtakuStream extends Provider {
+export interface SchemaItem {
+  group: String
+  key: String
+  time: Date
+  episode: number
+  seriesUrl: String
+}
+
+export default class OtakuStream implements Provider {
+  name: String
+  url: String
+  base: String
+  schema: Object
+  maxPages: number  
   // constructor({ base = `https://sile.untu.ms/scrape/otakustream.html`, maxPages } = {}) {
-  constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages } = {}) {
-    debug(`base`, base)
-    super(base, maxPages)
+  constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {
+    this.base = base
+    this.maxPages = maxPages
     this.name = `OtakuStream`
     this.url = `http://otakustream.tv/`
     this.schema = schema
   }
 
   // eslint-disable-next-line class-methods-use-this
-  flatten({ items }) {
+  flatten({ items }: { items: SchemaItem[]}): Item[] {
     return items.map(({ group, key, time, episode, seriesUrl }) => ({
       key,
       time,
@@ -75,5 +89,3 @@ class OtakuStream extends Provider {
     }
   }
 }
-
-module.exports = OtakuStream
