@@ -7,7 +7,7 @@ import FormData from 'form-data'
 import { ProviderConstructor } from './Provider'
 import makeDebug from 'debug'
 
-export const debug = makeDebug(<string> require(`../package.json`).name)
+export const debug: makeDebug.IDebugger = makeDebug(<string> require(`../package.json`).name)
 export const config: Config = toml.parse(fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`))
 
 export interface Config {
@@ -27,7 +27,7 @@ export const getDb = (url = config.db.url): knex =>
     connection: url,
   })
 
-export const getProviders = (providers: string[] = config.scraper.providers): ProviderConstructor[] =>
+export const getProviderConstructors = (providers: string[] = config.scraper.providers): ProviderConstructor[] =>
   // eslint-disable-next-line import/no-dynamic-require, global-require
   providers.map(provider => require(`${__dirname}/providers/${provider}`))
 
@@ -38,11 +38,22 @@ export const range = function*(a: number, b: number): IterableIterator<number> {
     yield i
   }
 }
+interface FormDataPrivate {
+  _lastBoundary(): string
+  _multiPartHeader(a: string, b: string | number, c: Object): string
+}
+namespace FormDataPrivate {
+  export interface Constructor {
+    LINE_BREAK: string
+  }
+  
+  export const Constructor = <Constructor> <any> FormData
+}
 
-export const buildFormBody = (formData: FormData, fields: {[key: string]: string | number}): string =>
-  Object.entries(fields)
-    // @ts-ignore
-    .map(([field, value]) => [formData._multiPartHeader(field, value, {}), value].join(``))
+export const buildFormBody = (formData: FormData, fields: {[key: string]: string | number}): string => {
+  const formDataPrivate = <FormDataPrivate> <any> formData
+  return Object.entries(fields)
+    .map(([field, value]) => [formDataPrivate._multiPartHeader(field, value, {}), value].join(``))
     .concat(``)
-    // @ts-ignore
-    .join(FormData.LINE_BREAK) + formData._lastBoundary()
+    .join(FormDataPrivate.Constructor.LINE_BREAK) + formDataPrivate._lastBoundary()
+}
