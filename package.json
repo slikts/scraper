@@ -29,7 +29,8 @@
   "scripts": {
     "test": "node --harmony_async_iteration node_modules/.bin/ava",
     "main": "node --harmony -r ts-node/register src/main.ts",
-    "debug-watch": "DEBUG=scraper nodemon --harmony -r ts-node/register src/main.ts"
+    "debug-watch": "DEBUG=scraper nodemon --harmony -r ts-node/register src/main.ts",
+    "deploy": "git push kaste master"
   },
   "devDependencies": {
     "@slikts/eslint-config-prettier": "^4.0.0",
