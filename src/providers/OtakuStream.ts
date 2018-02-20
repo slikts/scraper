@@ -3,8 +3,9 @@ import { debug, parseEp, range, buildFormBody } from '../util'
 import { parseDate } from 'chrono-node'
 import FormData from 'form-data'
 import Item from '../Item'
+import { ScrapeOptions } from 'scrape-it'
 
-const schema = {
+const schema: ScrapeOptions = {
   items: {
     listItem: `.ep-box`,
     data: {
@@ -30,18 +31,18 @@ const schema = {
 }
 
 export interface SchemaItem {
-  group: String
-  key: String
+  group: string
+  key: string
   time: Date
   episode: number
-  seriesUrl: String
+  seriesUrl: string
 }
 
 export default class OtakuStream implements Provider {
-  name: String
-  url: String
-  base: String
-  schema: Object
+  name: string
+  url: string
+  base: string
+  schema: ScrapeOptions
   maxPages: number  
   // constructor({ base = `https://sile.untu.ms/scrape/otakustream.html`, maxPages } = {}) {
   constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {

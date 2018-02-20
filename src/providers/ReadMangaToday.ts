@@ -1,5 +1,6 @@
 import Provider from '../Provider'
 import { range, parseEp } from '../util'
+import { ScrapeOptions } from 'scrape-it'
 
 const itemSchema = {
   listItem: `dd a`,
@@ -14,7 +15,7 @@ const itemSchema = {
   },
 }
 
-const titleSchema = {
+const titleSchema: ScrapeOptions = {
   titles: {
     listItem: `.manga_updates dl`,
     data: {
@@ -49,7 +50,7 @@ class ReadMangaToday implements Provider {
   name: String
   url: String
   base: String
-  schema: Object
+  schema: ScrapeOptions
   maxPages: number
   constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {
     this.name = `ReadMangaToday`

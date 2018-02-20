@@ -2,6 +2,7 @@ import scrapeIt from 'scrape-it'
 import { debug, config } from './util'
 import Provider from './Provider'
 import knex from 'knex'
+import Item from './Item'
 
 
 export default class Runner {
@@ -62,14 +63,14 @@ export default class Runner {
     }
   }
 
-  async save(items, url) {
+  async save(items: Item[], url: string) {
     const tableName = `item`
     const keys = items.map(({ key }) => key)
     const { db } = this
     const existing = (await db
       .select(`key`)
       .from(tableName)
-      .whereIn(`key`, keys)).map(({ key }) => key)
+      .whereIn(`key`, keys)).map(({ key }: { key: string }) => key)
     const result = await db.batchInsert(
       tableName,
       items.filter(({ key }) => !existing.includes(key))
@@ -79,5 +80,3 @@ export default class Runner {
     return inserted
   }
 }
-
-// module.exports = Runner
