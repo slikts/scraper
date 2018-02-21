@@ -8,9 +8,10 @@ import { ProviderConstructor } from "./Provider"
 import makeDebug from "debug"
 import { ProviderConfig, ProviderData } from "./Provider"
 
-export const debug: makeDebug.IDebugger = makeDebug(
+export const log: makeDebug.IDebugger = makeDebug(
   <string>require(`../package.json`).name
 )
+
 export const config: Config = toml.parse(
   fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`)
 )
@@ -25,7 +26,7 @@ export interface Config {
   providers: ProviderConfig
 }
 
-debug(`config %o`, config)
+log(`config %o`, config)
 export const getDb = (url = config.db.url): knex =>
   knex({
     client: `pg`,

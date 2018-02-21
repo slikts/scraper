@@ -1,5 +1,5 @@
 import scrapeIt from "@slikts/scrape-it"
-import { debug, config } from "./util"
+import { log, config } from "./util"
 import Provider from "./Provider"
 import knex from "knex"
 import Item from "./Item"
@@ -25,7 +25,7 @@ export default class Runner {
     for await (const { items, url } of this.fetchItems()) {
       const inserted = await this.save(items, url)
       if (!items.length || inserted < items.length) {
-        debug(`done`)
+        log(`done`)
         break
       }
     }
@@ -36,7 +36,7 @@ export default class Runner {
     const gen = provider.pages()
     let pageOpts = gen.next().value
     for (;;) {
-      debug(`fetching %o`, pageOpts.url)
+      log(`fetching %o`, pageOpts.url)
       const items = provider.flatten(<{ data: Object }>await scrapeIt(
         {
           ...pageOpts,
@@ -60,7 +60,7 @@ export default class Runner {
     const { db } = this
     const { name, url } = this.provider
     const exists = !!(await db(`source`).where(`name`, name)).length
-    debug(`source %o`, { name, url })
+    log(`source %o`, { name, url })
     if (!exists) {
       await db(`source`).insert({
         name,
@@ -82,7 +82,7 @@ export default class Runner {
       items.filter(({ key }) => !existing.includes(key))
     )
     const inserted: number = result.length ? result[0].rowCount : 0
-    debug(`${inserted}/${items.length} items inserted from ${url}`)
+    log(`${inserted}/${items.length} items inserted from ${url}`)
     return inserted
   }
 }

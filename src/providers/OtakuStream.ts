@@ -1,5 +1,5 @@
 import Provider from "../Provider"
-import { debug, parseEp, range, buildFormBody } from "../util"
+import { log, parseEp, range, buildFormBody } from "../util"
 import { parseDate } from "chrono-node"
 import FormData from "form-data"
 import Item from "../Item"

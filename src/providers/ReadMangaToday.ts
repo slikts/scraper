@@ -1,5 +1,5 @@
 import Provider, { Page } from "../Provider"
-import { debug, range, parseEp } from "../util"
+import { log, range, parseEp } from "../util"
 import { ScrapeOptions } from "scrape-it"
 
 const itemSchema = {
