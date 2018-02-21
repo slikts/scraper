@@ -111,7 +111,7 @@ export default class WatchCartoonOnline implements Provider {
         return {
           key,
           time,
-          group: name,
+          group: [name, type].filter(truthy).join(' '),
           data: filterObjValues({
             fullName,
             ep,
@@ -120,7 +120,14 @@ export default class WatchCartoonOnline implements Provider {
             epTitle,
           }),
           source: this.constructor.name,
-          name: `${name} ${ep ? makeFullEp(ep, season) : ``}`.trim(),
+          name: [
+            name,
+            type,
+            ep && makeFullEp(ep, season),
+            epTitle && `- ${epTitle}`,
+          ]
+            .filter(truthy)
+            .join(' '),
         }
       })
   }
