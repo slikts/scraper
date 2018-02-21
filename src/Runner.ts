@@ -24,7 +24,7 @@ export default class Runner {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
       const inserted = await this.save(items, url)
-      if (inserted < items.length) {
+      if (!items.length || inserted < items.length) {
         debug(`done`)
         break
       }

@@ -1,10 +1,9 @@
-import Provider from '../Provider'
-import { debug, parseEp, range, buildFormBody } from '../util'
-import { parseDate } from 'chrono-node'
-import FormData from 'form-data'
-import Item from '../Item'
-import { ScrapeOptions } from 'scrape-it'
-
+import Provider from "../Provider"
+import { debug, parseEp, range, buildFormBody } from "../util"
+import { parseDate } from "chrono-node"
+import FormData from "form-data"
+import Item from "../Item"
+import { ScrapeOptions } from "scrape-it"
 
 const schema: ScrapeOptions = {
   items: {
@@ -13,22 +12,22 @@ const schema: ScrapeOptions = {
       group: `.name`,
       key: {
         selector: `.fa-play`,
-        attr: `href`,
+        attr: `href`
       },
       time: {
         selector: `.date_homepage`,
-        convert: parseDate,
+        convert: parseDate
       },
       seriesUrl: {
         selector: `.eh-inner .fa-file-text-o`,
-        attr: `href`,
+        attr: `href`
       },
       episode: {
         selector: `.ep-no`,
-        convert: parseEp,
-      },
-    },
-  },
+        convert: parseEp
+      }
+    }
+  }
 }
 
 export interface SchemaItem {
@@ -44,9 +43,12 @@ export default class OtakuStream implements Provider {
   url: string
   base: string
   schema: ScrapeOptions
-  maxPages: number  
-  // constructor({ base = `https://sile.untu.ms/scrape/otakustream.html`, maxPages } = {}) {
-  constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {
+  maxPages: number
+  constructor({
+    base = `https://sile.untu.ms/scrape/otakustream.html`,
+    maxPages = 3
+  } = {}) {
+    // constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {
     this.base = base
     this.maxPages = maxPages
     this.name = `OtakuStream`
@@ -62,10 +64,10 @@ export default class OtakuStream implements Provider {
       group,
       data: {
         episode,
-        seriesUrl,
+        seriesUrl
       },
       source: this.name,
-      name: `${group} ${episode}`,
+      name: `${group} ${episode}`
     }))
   }
 
@@ -74,19 +76,19 @@ export default class OtakuStream implements Provider {
       const formData = new FormData()
       const formBody = buildFormBody(formData, {
         action: `recent_release`,
-        ...(page ? { offset: page * 10 } : {}),
+        ...(page ? { offset: page * 10 } : {})
       })
 
       yield {
         url: this.base,
         headers: {
-          'x-requested-with': `XMLHttpRequest`,
+          "x-requested-with": `XMLHttpRequest`,
           origin: `https://otakustream.tv`,
           referer: `https://otakustream.tv/`,
-          ...formData.getHeaders(),
+          ...formData.getHeaders()
         },
         method: `POST`,
-        data: formBody,
+        data: formBody
       }
     }
   }

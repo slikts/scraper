@@ -1,20 +1,20 @@
 import Runner from "./Runner"
 import { ProviderConstructor } from "./Provider"
-import { debug, getDb, getProviderConstructors } from "./util"
+import {
+  debug,
+  getDb,
+  getProviderConstructors,
+  ProviderConstructorData
+} from "./util"
 
-const main = async (db = getDb(), constructors?: ProviderConstructor[]) => {
-  if (!constructors) {
-    constructors = await getProviderConstructors()
-  }
+const main = async (db = getDb(), data?: ProviderConstructorData) => {
+  const { constructors, config } = data || (await getProviderConstructors())
   for (const Provider of constructors) {
-    try {
-      await new Runner(new Provider(), db).run()
-    } catch (err) {
-      debug(`error`, err)
-    }
+    debug("asd %o", config[Provider.name])
+    await new Runner(new Provider(config[Provider.name]), db).run()
   }
   debug(`all providers done`)
-  // XXX
+  // XXX why is this necessary
   process.exit()
 }
 if (require.main === module) {

@@ -1,9 +1,18 @@
-import Item from './Item'
-import { ScrapeOptions } from 'scrape-it'
+import Item from "./Item"
+import { ScrapeOptions } from "scrape-it"
 
 export interface Page {
   url: string
-  headers?: {[key: string]: string}
+  headers?: { [key: string]: string }
+}
+
+export interface ProviderConfig {
+  [name: string]: ProviderData
+}
+
+export interface ProviderData {
+  base: string
+  maxPages?: number
 }
 
 export default interface Provider {
@@ -17,5 +26,5 @@ export default interface Provider {
 }
 
 export interface ProviderConstructor {
-  new(a?: Object): Provider
+  new (a?: ProviderData): Provider
 }

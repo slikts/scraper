@@ -56,7 +56,6 @@ export default class ReadMangaToday implements Provider {
     base = `https://www.readmng.com/latest-releases`,
     maxPages = 3
   } = {}) {
-    // constructor({ base = `https://sile.untu.ms/scrape/latest-releases.html`, maxPages = 3 } = {}) {
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base

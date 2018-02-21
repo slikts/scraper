@@ -2,5 +2,9 @@
 url = "postgres://localhost/scraper"
 
 [scraper]
-providers = ["Foo"]
 userAgent = "scraper"
+
+[providers.Foo]
+[providers.Bar]
+base = "http://bar.example"
+maxPages = 5
