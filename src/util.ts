@@ -26,6 +26,7 @@ export interface Config {
   }
   scraper: {
     userAgent: string
+    dryRun: boolean
   }
   providers: ProviderConfig
 }
@@ -44,7 +45,7 @@ const providerName = (name: string): string => `${__dirname}/providers/${name}`
 
 export interface ProviderConstructorData {
   constructors: ProviderConstructor[]
-  config: ProviderConfig
+  providerConfig: ProviderConfig
 }
 
 export const getProviderConstructors = async (
@@ -55,7 +56,7 @@ export const getProviderConstructors = async (
   )
   return {
     constructors: modules.map(module => module.default),
-    config: config.providers
+    providerConfig: config.providers
   }
 }
 

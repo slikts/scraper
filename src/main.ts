@@ -4,13 +4,19 @@ import {
   log,
   getDb,
   getProviderConstructors,
-  ProviderConstructorData
+  ProviderConstructorData,
+  config
 } from "./util"
 
 const main = async (db = getDb(), data?: ProviderConstructorData) => {
-  const { constructors, config } = data || (await getProviderConstructors())
+  const { constructors, providerConfig } =
+    data || (await getProviderConstructors())
   for (const Provider of constructors) {
-    await new Runner(new Provider(config[Provider.name]), db).run()
+    await new Runner(
+      new Provider(providerConfig[Provider.name]),
+      db,
+      config.scraper.dryRun
+    ).run()
   }
   log(`all providers done`)
   // XXX why is this necessary

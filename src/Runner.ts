@@ -43,16 +43,22 @@ export default class Runner {
   constructor(
     readonly provider: Provider,
     readonly db: knex,
+    readonly dryRun = false,
     readonly userAgent = config.scraper.userAgent
   ) {
     this.provider = provider
     this.db = db
     this.userAgent = userAgent
+    this.dryRun = dryRun
   }
 
   async run(): Promise<void> {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
+      if (this.dryRun) {
+        log("dry run")
+        continue
+      }
       const inserted = await this.save(items, url)
       if (!items.length || inserted < items.length) {
         log(`done`)
