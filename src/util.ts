@@ -8,9 +8,13 @@ import { ProviderConstructor } from "./Provider"
 import makeDebug from "debug"
 import { ProviderConfig, ProviderData } from "./Provider"
 
-export const log: makeDebug.IDebugger = makeDebug(
-  <string>require(`../package.json`).name
-)
+const { name: packageName }: { name: string } = require(`../package.json`)
+
+export const log: makeDebug.IDebugger = Object.assign(makeDebug(packageName), {
+  log: console.log
+})
+
+export const error: makeDebug.IDebugger = makeDebug(packageName)
 
 export const config: Config = toml.parse(
   fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`)
