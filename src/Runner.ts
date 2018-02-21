@@ -1,46 +1,52 @@
-import scrapeIt from '@slikts/scrape-it'
-import { debug, config } from './util'
-import Provider from './Provider'
-import knex from 'knex'
-import Item from './Item'
+import scrapeIt from "@slikts/scrape-it"
+import { debug, config } from "./util"
+import Provider from "./Provider"
+import knex from "knex"
+import Item from "./Item"
 
+export interface FetchedItems {
+  items: Item[]
+  url: string
+}
 
 export default class Runner {
-  constructor(readonly provider: Provider, readonly db: knex, readonly userAgent = config.scraper.userAgent) {
+  constructor(
+    readonly provider: Provider,
+    readonly db: knex,
+    readonly userAgent = config.scraper.userAgent
+  ) {
     this.provider = provider
     this.db = db
     this.userAgent = userAgent
   }
 
-  async run() {
+  async run(): Promise<void> {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
       const inserted = await this.save(items, url)
-      if (!inserted) {
+      if (inserted < items.length) {
         debug(`done`)
         break
       }
     }
   }
 
-  async *fetchItems() {
+  async *fetchItems(): AsyncIterableIterator<FetchedItems> {
     const { provider, provider: { schema } } = this
     const gen = provider.pages()
     let pageOpts = gen.next().value
     for (;;) {
       debug(`fetching %o`, pageOpts.url)
-      const items = provider.flatten(
-        <{ data: Object }> await scrapeIt(
-          {
-            ...pageOpts,
-            headers: {
-              ...(pageOpts.headers || {}),
-              'User-Agent': this.userAgent,
-            },
-          },
-          schema
-        )
-      )
+      const items = provider.flatten(<{ data: Object }>await scrapeIt(
+        {
+          ...pageOpts,
+          headers: {
+            ...(pageOpts.headers || {}),
+            "User-Agent": this.userAgent
+          }
+        },
+        schema
+      ))
       const next = gen.next(items)
       yield { items, url: pageOpts.url }
       if (next.done) {
@@ -50,7 +56,7 @@ export default class Runner {
     }
   }
 
-  async registerSource() {
+  async registerSource(): Promise<void> {
     const { db } = this
     const { name, url } = this.provider
     const exists = !!(await db(`source`).where(`name`, name)).length
@@ -58,16 +64,16 @@ export default class Runner {
     if (!exists) {
       await db(`source`).insert({
         name,
-        url,
+        url
       })
     }
   }
 
-  async save(items: Item[], url: string) {
+  async save(items: Item[], url: string): Promise<number> {
     const tableName = `item`
     const keys = items.map(({ key }) => key)
     const { db } = this
-    const existing = (await db
+    const existing: string[] = (await db
       .select(`key`)
       .from(tableName)
       .whereIn(`key`, keys)).map(({ key }: { key: string }) => key)
@@ -75,7 +81,7 @@ export default class Runner {
       tableName,
       items.filter(({ key }) => !existing.includes(key))
     )
-    const inserted = result.length ? result[0].rowCount : 0
+    const inserted: number = result.length ? result[0].rowCount : 0
     debug(`${inserted}/${items.length} items inserted from ${url}`)
     return inserted
   }

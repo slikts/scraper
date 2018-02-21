@@ -1,4 +1,4 @@
-import Provider from "../Provider"
+import Provider, { Page } from "../Provider"
 import { debug, range, parseEp } from "../util"
 import { ScrapeOptions } from "scrape-it"
 
