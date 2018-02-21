@@ -1,8 +1,10 @@
 [db]
 url = "postgres://localhost/scraper"
 
-[scraper]
+[runner]
 userAgent = "scraper"
+dryRun = true
+debugData = false
 
 [providers.Foo]
 [providers.Bar]

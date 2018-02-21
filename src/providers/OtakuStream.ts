@@ -3,7 +3,7 @@ import { log, parseEp, range, buildFormBody } from '../util'
 import { parseDate } from 'chrono-node'
 import FormData from 'form-data'
 import Item from '../Item'
-import { ScrapeOptions } from 'scrape-it'
+import { ScrapeOptions } from '@slikts/scrape-it'
 
 const schema: ScrapeOptions = {
   items: {
@@ -39,15 +39,16 @@ export interface SchemaItem {
 }
 
 export default class OtakuStream implements Provider {
-  name: string
   url: string
   base: string
   schema: ScrapeOptions
   maxPages: number
-  constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {
+  constructor({
+    base = `https://otakustream.tv/api/tools.php`,
+    maxPages = 3,
+  } = {}) {
     this.base = base
     this.maxPages = maxPages
-    this.name = `OtakuStream`
     this.url = `http://otakustream.tv/`
     this.schema = schema
   }
@@ -62,7 +63,7 @@ export default class OtakuStream implements Provider {
         episode,
         seriesUrl,
       },
-      source: this.name,
+      source: this.constructor.name,
       name: `${group} ${episode}`,
     }))
   }

@@ -1,5 +1,5 @@
 import Item from './Item'
-import { ScrapeOptions } from 'scrape-it'
+import { ScrapeOptions } from '@slikts/scrape-it'
 
 export interface Page {
   url: string
@@ -16,7 +16,6 @@ export interface ProviderData {
 }
 
 export default interface Provider {
-  readonly name: string
   readonly url: string
   readonly base: string
   readonly schema: ScrapeOptions

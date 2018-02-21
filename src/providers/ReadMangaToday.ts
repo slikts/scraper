@@ -1,6 +1,6 @@
 import Provider, { Page } from '../Provider'
 import { log, range, parseEp } from '../util'
-import { ScrapeOptions } from 'scrape-it'
+import { ScrapeOptions } from '@slikts/scrape-it'
 
 const itemSchema = {
   listItem: `dd a`,
@@ -47,13 +47,14 @@ export interface SchemaItem {
 }
 
 export default class ReadMangaToday implements Provider {
-  name: string
   url: string
   base: string
   schema: ScrapeOptions
   maxPages: number
-  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {
-    this.name = `ReadMangaToday`
+  constructor({
+    base = `https://www.readmng.com/latest-releases`,
+    maxPages = 3,
+  } = {}) {
     this.url = `http://readmanga.today/`
     this.base = base
     this.schema = titleSchema
@@ -70,7 +71,7 @@ export default class ReadMangaToday implements Provider {
           data: {
             chapter,
           },
-          source: this.name,
+          source: this.constructor.name,
           name: `${name} ${chapter}`,
         }))
       )

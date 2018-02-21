@@ -1,12 +1,10 @@
 /* eslint-disable no-underscore-dangle */
 
-import toml from 'toml'
 import knex from 'knex'
-import fs from 'fs'
 import FormData from 'form-data'
-import { ProviderConstructor } from './Provider'
 import makeDebug from 'debug'
-import { ProviderConfig, ProviderData } from './Provider'
+import { ProviderConstructor, ProviderConfig, ProviderData } from './Provider'
+import { config } from './Config'
 
 const { name: packageName }: { name: string } = require(`../package.json`)
 
@@ -16,22 +14,6 @@ export const log: makeDebug.IDebugger = Object.assign(makeDebug(packageName), {
 
 export const error: makeDebug.IDebugger = makeDebug(packageName)
 
-export const config: Config = toml.parse(
-  fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`)
-)
-
-export interface Config {
-  db: {
-    url: string
-  }
-  scraper: {
-    userAgent: string
-    dryRun: boolean
-  }
-  providers: ProviderConfig
-}
-
-log(`config %o`, config)
 export const getDb = (url = config.db.url): knex =>
   knex({
     client: `pg`,
@@ -51,14 +33,17 @@ export interface ProviderConstructorData {
 export const getProviderConstructors = async (
   providers = parseProviders(config.providers)
 ): Promise<ProviderConstructorData> => {
-  const modules = await Promise.all(providers.map(([name]) => import(providerName(name))))
+  const modules = await Promise.all(
+    providers.map(([name]) => import(providerName(name)))
+  )
   return {
     constructors: modules.map(module => module.default),
     providerConfig: config.providers,
   }
 }
 
-export const parseEp = (a: string): number => +(a.trim().match(/\d+(?:\.\d+)?$/) || [])[0]
+export const parseEp = (a: string): number =>
+  +(a.trim().match(/\d+(?:\.\d+)?$/) || [])[0]
 
 export const range = function*(a: number, b: number): IterableIterator<number> {
   for (let i = a; i <= b; i += 1) {
@@ -84,8 +69,24 @@ export const buildFormBody = (
   const formDataPrivate = <FormDataPrivate>(<any>formData)
   return (
     Object.entries(fields)
-      .map(([field, value]) => [formDataPrivate._multiPartHeader(field, value, {}), value].join(``))
+      .map(([field, value]) =>
+        [formDataPrivate._multiPartHeader(field, value, {}), value].join(``)
+      )
       .concat(``)
-      .join(FormDataPrivate.Constructor.LINE_BREAK) + formDataPrivate._lastBoundary()
+      .join(FormDataPrivate.Constructor.LINE_BREAK) +
+    formDataPrivate._lastBoundary()
   )
 }
+
+export const entriesToObj = <T>(entries: [string, T][]): { [key: string]: T } =>
+  entries.reduce((acc, [k, v]) => ({ ...acc, [k]: v }), {})
+
+export const filterObjValues = <T>(
+  a: { [key: string]: T },
+  fn: (a: T) => boolean = truthy
+): { [key: string]: T } =>
+  entriesToObj(Object.entries(a).filter(([_, a]) => fn(a)))
+
+export const id = <T>(a: T): T => a
+
+export const truthy = <T>(a: T): boolean => !!a
