@@ -84,7 +84,7 @@ export default class WatchCartoonOnline implements Provider {
   schema: ScrapeOptions
   maxPages: number
   constructor({
-    base = `https://sile.untu.ms/scrape/wco.html`,
+    base = `https://www.watchcartoononline.io/last-50-recent-release`,
     maxPages = 3,
   } = {}) {
     this.base = base
