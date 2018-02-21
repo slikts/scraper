@@ -45,10 +45,9 @@ export default class OtakuStream implements Provider {
   schema: ScrapeOptions
   maxPages: number
   constructor({
-    base = `https://sile.untu.ms/scrape/otakustream.html`,
+    base = `https://otakustream.tv/api/tools.php`,
     maxPages = 3
   } = {}) {
-    // constructor({ base = `https://otakustream.tv/api/tools.php`, maxPages = 3 } = {}) {
     this.base = base
     this.maxPages = maxPages
     this.name = `OtakuStream`
