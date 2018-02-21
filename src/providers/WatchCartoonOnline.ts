@@ -7,24 +7,10 @@ import { ScrapeOptions } from "scrape-it"
 
 const schema: ScrapeOptions = {
   items: {
-    listItem: `.ep-box`,
+    listItem: `.menulast a`,
     data: {
-      group: `.name`,
-      key: {
-        selector: `.fa-play`,
-        attr: `href`
-      },
-      time: {
-        selector: `.date_homepage`,
-        convert: parseDate
-      },
-      seriesUrl: {
-        selector: `.eh-inner .fa-file-text-o`,
-        attr: `href`
-      },
-      episode: {
-        selector: `.ep-no`,
-        convert: parseEp
+      url: {
+        attr: "href"
       }
     }
   }

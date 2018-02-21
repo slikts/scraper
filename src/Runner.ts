@@ -56,8 +56,8 @@ export default class Runner {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
       if (this.dryRun) {
-        log("dry run")
-        continue
+        log("dry run, %d items skipped", items.length)
+        break
       }
       const inserted = await this.save(items, url)
       if (!items.length || inserted < items.length) {
