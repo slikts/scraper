@@ -1,13 +1,43 @@
 import scrapeIt from "@slikts/scrape-it"
-import { log, config } from "./util"
+import { log, error, config } from "./util"
 import Provider from "./Provider"
 import knex from "knex"
 import Item from "./Item"
+import fs from "fs"
 
 export interface FetchedItems {
   items: Item[]
   url: string
 }
+
+interface ScrapeResult {
+  data: Object
+  response: {
+    headers: { [key: string]: string }
+    statusCode: number
+    statusMessage: string
+    fetchedUrls: string[]
+  }
+  body: string
+}
+
+const logResultError = ({
+  response: { headers, statusCode, statusMessage, fetchedUrls },
+  body
+}: ScrapeResult): void =>
+  console.error(
+    JSON.stringify(
+      {
+        fetchedUrls,
+        headers,
+        statusCode,
+        statusMessage,
+        body
+      },
+      null,
+      2
+    )
+  )
 
 export default class Runner {
   constructor(
@@ -37,7 +67,7 @@ export default class Runner {
     let pageOpts = gen.next().value
     for (;;) {
       log(`fetching %o`, pageOpts.url)
-      const items = provider.flatten(<{ data: Object }>await scrapeIt(
+      const result = <ScrapeResult>await scrapeIt(
         {
           ...pageOpts,
           headers: {
@@ -46,7 +76,13 @@ export default class Runner {
           }
         },
         schema
-      ))
+      )
+      const items = provider.flatten(result)
+      if (!items.length) {
+        error("no items")
+        logResultError(result)
+        break
+      }
       const next = gen.next(items)
       yield { items, url: pageOpts.url }
       if (next.done) {
