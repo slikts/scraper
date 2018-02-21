@@ -1,18 +1,18 @@
-import Provider, { Page } from "../Provider"
-import { log, range, parseEp } from "../util"
-import { ScrapeOptions } from "scrape-it"
+import Provider, { Page } from '../Provider'
+import { log, range, parseEp } from '../util'
+import { ScrapeOptions } from 'scrape-it'
 
 const itemSchema = {
   listItem: `dd a`,
   data: {
     url: {
-      attr: `href`
+      attr: `href`,
     },
     chapter: {
       how: `html`,
-      convert: parseEp
-    }
-  }
+      convert: parseEp,
+    },
+  },
 }
 
 const titleSchema: ScrapeOptions = {
@@ -28,11 +28,11 @@ const titleSchema: ScrapeOptions = {
               .split(`/`)
               .reverse()
               .join(`-`)
-          )
+          ),
       },
-      items: itemSchema
-    }
-  }
+      items: itemSchema,
+    },
+  },
 }
 
 export interface SchemaTitle {
@@ -52,10 +52,7 @@ export default class ReadMangaToday implements Provider {
   base: string
   schema: ScrapeOptions
   maxPages: number
-  constructor({
-    base = `https://www.readmng.com/latest-releases`,
-    maxPages = 3
-  } = {}) {
+  constructor({ base = `https://www.readmng.com/latest-releases`, maxPages = 3 } = {}) {
     this.name = `ReadMangaToday`
     this.url = `http://readmanga.today/`
     this.base = base
@@ -71,10 +68,10 @@ export default class ReadMangaToday implements Provider {
           time: date,
           group: name,
           data: {
-            chapter
+            chapter,
           },
           source: this.name,
-          name: `${name} ${chapter}`
+          name: `${name} ${chapter}`,
         }))
       )
       .reduce((a, b) => a.concat(b), [])
@@ -82,7 +79,7 @@ export default class ReadMangaToday implements Provider {
 
   *pages() {
     const makeUrl = (n: number) => ({
-      url: `${this.base}${n > 1 ? `/${n}` : ``}`
+      url: `${this.base}${n > 1 ? `/${n}` : ``}`,
     })
     yield* [...range(1, this.maxPages)].map(makeUrl)
   }

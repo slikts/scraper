@@ -1,19 +1,19 @@
-import Provider from "../Provider"
-import { log, parseEp, range, buildFormBody } from "../util"
-import { parseDate } from "chrono-node"
-import FormData from "form-data"
-import Item from "../Item"
-import { ScrapeOptions } from "scrape-it"
+import Provider from '../Provider'
+import { log, parseEp, range, buildFormBody } from '../util'
+import { parseDate } from 'chrono-node'
+import FormData from 'form-data'
+import Item from '../Item'
+import { ScrapeOptions } from 'scrape-it'
 
 const schema: ScrapeOptions = {
   items: {
     listItem: `.menulast a`,
     data: {
       url: {
-        attr: "href"
-      }
-    }
-  }
+        attr: 'href',
+      },
+    },
+  },
 }
 
 export interface SchemaItem {
@@ -30,10 +30,7 @@ export default class WatchCartoonOnline implements Provider {
   base: string
   schema: ScrapeOptions
   maxPages: number
-  constructor({
-    base = `https://sile.untu.ms/scrape/wco.html`,
-    maxPages = 3
-  } = {}) {
+  constructor({ base = `https://sile.untu.ms/scrape/wco.html`, maxPages = 3 } = {}) {
     this.base = base
     this.maxPages = maxPages
     this.name = `OtakuStream`
@@ -49,10 +46,10 @@ export default class WatchCartoonOnline implements Provider {
       group,
       data: {
         episode,
-        seriesUrl
+        seriesUrl,
       },
       source: this.name,
-      name: `${group} ${episode}`
+      name: `${group} ${episode}`,
     }))
   }
 
@@ -67,11 +64,11 @@ export default class WatchCartoonOnline implements Provider {
       yield {
         url: this.base,
         headers: {
-          "x-requested-with": `XMLHttpRequest`,
+          'x-requested-with': `XMLHttpRequest`,
           origin: `https://www.watchcartoononline.com`,
-          referer: `https://www.watchcartoononline.com/`
+          referer: `https://www.watchcartoononline.com/`,
           // ...formData.getHeaders()
-        }
+        },
         // method: `POST`,
         // data: formBody
       }

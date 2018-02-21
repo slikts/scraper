@@ -1,9 +1,9 @@
-import scrapeIt from "@slikts/scrape-it"
-import { log, error, config } from "./util"
-import Provider from "./Provider"
-import knex from "knex"
-import Item from "./Item"
-import fs from "fs"
+import scrapeIt from '@slikts/scrape-it'
+import { log, error, config } from './util'
+import Provider from './Provider'
+import knex from 'knex'
+import Item from './Item'
+import fs from 'fs'
 
 export interface FetchedItems {
   items: Item[]
@@ -23,7 +23,7 @@ interface ScrapeResult {
 
 const logResultError = ({
   response: { headers, statusCode, statusMessage, fetchedUrls },
-  body
+  body,
 }: ScrapeResult): void =>
   console.error(
     JSON.stringify(
@@ -32,7 +32,7 @@ const logResultError = ({
         headers,
         statusCode,
         statusMessage,
-        body
+        body,
       },
       null,
       2
@@ -56,7 +56,7 @@ export default class Runner {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
       if (this.dryRun) {
-        log("dry run, %d items skipped", items.length)
+        log('dry run, %d items skipped', items.length)
         break
       }
       const inserted = await this.save(items, url)
@@ -78,14 +78,14 @@ export default class Runner {
           ...pageOpts,
           headers: {
             ...(pageOpts.headers || {}),
-            "User-Agent": this.userAgent
-          }
+            'User-Agent': this.userAgent,
+          },
         },
         schema
       )
       const items = provider.flatten(result)
       if (!items.length) {
-        error("no items")
+        error('no items')
         logResultError(result)
         break
       }
@@ -106,7 +106,7 @@ export default class Runner {
     if (!exists) {
       await db(`source`).insert({
         name,
-        url
+        url,
       })
     }
   }

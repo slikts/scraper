@@ -1,5 +1,5 @@
-import Item from "./Item"
-import { ScrapeOptions } from "scrape-it"
+import Item from './Item'
+import { ScrapeOptions } from 'scrape-it'
 
 export interface Page {
   url: string
