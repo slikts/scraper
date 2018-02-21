@@ -4,7 +4,7 @@ declare module 'chrono-node' {
 
 // https://github.com/Microsoft/TypeScript/issues/22082
 interface RegExpMatchArray {
-  groups: {
+  groups?: {
     [key: string]: string
   }
 }

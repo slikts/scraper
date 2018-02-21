@@ -36,7 +36,7 @@ export interface SchemaItem {
   fullName: string
 }
 
-const namePattern = /^(?<name>.+?)(?: Season (?<season>\d+))?( Episode (?<ep>\d+))?( English (?<type>Subbed|Dubbed))?( - (?<epTitle>.+))?$/
+const namePattern = /^(?<name>.+?)(?: Season (?<season>\d+))?( Episode (?<ep>\d+))( English (?<type>Subbed|Dubbed))?( - (?<epTitle>.+))?$/
 
 interface NameGroups {
   [key: string]: any
@@ -51,28 +51,21 @@ interface NameMatch extends RegExpMatchArray {
   groups: NameGroups
 }
 
-const matchFullName = (rawName: string): NameGroups => {
-  const match = <NameMatch>rawName.match(namePattern)
-
-  const { name, season, ep, type, epTitle } =
-    (match && match.groups) ||
-    <NameGroups>{
-      name: rawName,
+const matchFullName = (rawName: string): NameGroups | null => {
+  const match = rawName.match(namePattern)
+  const { debugNames } = config.runner
+  if (!match) {
+    if (debugNames) {
+      log('skipping name %o', rawName)
     }
-  if (config.runner.debugNames) {
-    log(
-      'name %o',
-      rawName,
-      filterObjValues({ name, season, ep, type, epTitle })
-    )
+    return null
   }
-  return {
-    name,
-    season,
-    ep,
-    type,
-    epTitle,
+  const { name, season, ep, type, epTitle } = <NameGroups>match.groups
+  const result = { name, season, ep, type, epTitle }
+  if (debugNames) {
+    log('name %o', rawName, filterObjValues(result))
   }
+  return result
 }
 
 const makeFullEp = (ep: string, season?: string): string =>
@@ -85,10 +78,9 @@ export default class WatchCartoonOnline implements Provider {
   maxPages: number
   constructor({
     base = `https://www.watchcartoononline.io/last-50-recent-release`,
-    maxPages = 3,
   } = {}) {
     this.base = base
-    this.maxPages = maxPages
+    this.maxPages = 1
     this.url = `https://www.watchcartoononline.com/`
     this.schema = schema
   }

@@ -4,6 +4,7 @@ import { parseDate } from 'chrono-node'
 import FormData from 'form-data'
 import Item from '../Item'
 import { ScrapeOptions } from '@slikts/scrape-it'
+import { config } from '../Config'
 
 const schema: ScrapeOptions = {
   items: {
@@ -34,7 +35,7 @@ export interface SchemaItem {
   group: string
   key: string
   time: Date
-  episode: number
+  episode: number | null
   seriesUrl: string
 }
 
@@ -53,19 +54,20 @@ export default class OtakuStream implements Provider {
     this.schema = schema
   }
 
-  // eslint-disable-next-line class-methods-use-this
   flatten({ data: { items } }: { data: { items: SchemaItem[] } }): Item[] {
-    return items.map(({ group, key, time, episode, seriesUrl }) => ({
-      key,
-      time,
-      group,
-      data: {
-        episode,
-        seriesUrl,
-      },
-      source: this.constructor.name,
-      name: `${group} ${episode}`,
-    }))
+    return items
+      .filter(({ episode }) => episode)
+      .map(({ group, key, time, episode, seriesUrl }) => ({
+        key,
+        time,
+        group,
+        data: {
+          episode,
+          seriesUrl,
+        },
+        source: this.constructor.name,
+        name: `${group} ${episode}`,
+      }))
   }
 
   *pages() {
@@ -84,8 +86,8 @@ export default class OtakuStream implements Provider {
           referer: `https://otakustream.tv/`,
           ...formData.getHeaders(),
         },
-        method: `POST`,
-        data: formBody,
+        // method: `POST`,
+        // data: formBody,
       }
     }
   }

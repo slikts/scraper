@@ -42,8 +42,11 @@ export const getProviderConstructors = async (
   }
 }
 
-export const parseEp = (a: string): number =>
-  +(a.trim().match(/\d+(?:\.\d+)?$/) || [])[0]
+export const onlyNumber = (a: number): number | null =>
+  Number.isNaN(a) ? null : a
+
+export const parseEp = (a: string): number | null =>
+  onlyNumber(+(a.trim().match(/\d+(?:\.\d+)?$/) || [])[0])
 
 export const range = function*(a: number, b: number): IterableIterator<number> {
   for (let i = a; i <= b; i += 1) {
