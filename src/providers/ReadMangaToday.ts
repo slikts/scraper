@@ -35,13 +35,13 @@ const titleSchema: ScrapeOptions = {
   },
 }
 
-export interface ISchemaTitle {
+export interface SchemaTitle {
   name: string
   date: Date
-  items: ISchemaItem[]
+  items: SchemaItem[]
 }
 
-export interface ISchemaItem {
+export interface SchemaItem {
   url: string
   chapter: number
 }
@@ -61,7 +61,7 @@ export default class ReadMangaToday implements Provider {
     this.maxPages = maxPages
   }
 
-  public flatten({ data: { titles } }: { data: { titles: ISchemaTitle[] } }) {
+  public flatten({ data: { titles } }: { data: { titles: SchemaTitle[] } }) {
     return titles
       .map(({ name, date, items }) =>
         items.map(({ url, chapter }) => ({

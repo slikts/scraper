@@ -1,17 +1,17 @@
 import scrapeIt from '@slikts/scrape-it'
 import fs from 'fs'
 import knex from 'knex'
-import { config, IConfig, IRunnerOpts } from './Config'
+import { config, Config, RunnerOpts } from './Config'
 import Item from './Item'
 import Provider from './Provider'
 import { error, log } from './util'
 
-export interface IFetchedItems {
+export interface FetchedItems {
   items: Item[]
   url: string
 }
 
-interface IScrapeResult {
+interface ScrapeResult {
   data: object
   response: {
     headers: { [key: string]: string }
@@ -25,7 +25,7 @@ interface IScrapeResult {
 const logResultError = ({
   response: { headers, statusCode, statusMessage, fetchedUrls },
   body,
-}: IScrapeResult): void =>
+}: ScrapeResult): void =>
   // tslint:disable-next-line:no-console
   console.error(
     JSON.stringify(
@@ -41,14 +41,14 @@ const logResultError = ({
     )
   )
 
-export interface IOpts extends IRunnerOpts {
+export interface Opts extends RunnerOpts {
   readonly provider: Provider
   readonly db: knex
 }
 
 export default class Runner {
-  public opts: IOpts
-  constructor(opts: IOpts) {
+  public opts: Opts
+  constructor(opts: Opts) {
     this.opts = opts
   }
 
@@ -67,7 +67,7 @@ export default class Runner {
     }
   }
 
-  public async *fetchItems(): AsyncIterableIterator<IFetchedItems> {
+  public async *fetchItems(): AsyncIterableIterator<FetchedItems> {
     const { provider, provider: { schema } } = this.opts
     const gen = provider.pages()
     let pageOpts = gen.next().value
@@ -82,7 +82,7 @@ export default class Runner {
           },
         },
         schema
-      )) as IScrapeResult
+      )) as ScrapeResult
       if (this.opts.debugItems) {
         log('items %o', result.data)
       }

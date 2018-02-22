@@ -1,29 +1,29 @@
 import { ScrapeOptions } from '@slikts/scrape-it'
 import Item from './Item'
 
-export interface IPage {
+export interface Page {
   url: string
   headers?: { [key: string]: string }
 }
 
-export interface IProviderConfig {
-  [name: string]: IProviderData
+export interface ProviderConfig {
+  [name: string]: ProviderData
 }
 
-export interface IProviderData {
+export interface ProviderData {
   base: string
   maxPages?: number
 }
 
-export default interface IProvider {
+export default interface Provider {
   readonly url: string
   readonly base: string
   readonly schema: ScrapeOptions
   readonly maxPages: number
   flatten(a: { data: object }): Item[]
-  pages(): IterableIterator<IPage>
+  pages(): IterableIterator<Page>
 }
 
-export interface IProviderConstructor {
-  new (a?: IProviderData): IProvider
+export interface ProviderConstructor {
+  new (a?: ProviderData): Provider
 }

@@ -5,8 +5,8 @@ import {
   error,
   getDb,
   getProviderConstructors,
-  IProviderConstructorData,
   log,
+  ProviderConstructorData,
 } from './util'
 
 log(`config %o`, config)

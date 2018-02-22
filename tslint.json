@@ -4,6 +4,7 @@
     "tslint-config-prettier"
   ],
   "rules": {
-    "no-this-assignment": [true, {"allow-destructuring": true}]
+    "no-this-assignment": [true, {"allow-destructuring": true}],
+    "interface-name": [true, "never-prefix"]
   }
 }

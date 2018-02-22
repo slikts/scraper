@@ -4,7 +4,7 @@ import FormData from 'form-data'
 import { AllHtmlEntities as Entities } from 'html-entities'
 import { config } from '../Config'
 import Item from '../Item'
-import IProvider from '../Provider'
+import Provider from '../Provider'
 import {
   buildFormBody,
   error,
@@ -31,14 +31,14 @@ const schema: ScrapeOptions = {
 const entities = new Entities()
 const doubleDecode = (a: string): string => entities.decode(entities.decode(a))
 
-export interface ISchemaItem {
+export interface SchemaItem {
   key: string
   fullName: string
 }
 
 const namePattern = /^(?<name>.+?)(?: Season (?<season>\d+))?( Episode (?<ep>\d+))( English (?<type>Subbed|Dubbed))?( - (?<epTitle>.+))?$/
 
-interface INameGroups {
+interface NameGroups {
   [key: string]: any
   name: string
   season?: string
@@ -47,11 +47,11 @@ interface INameGroups {
   epTitle?: string
 }
 
-interface INameMatch extends RegExpMatchArray {
-  groups: INameGroups
+interface NameMatch extends RegExpMatchArray {
+  groups: NameGroups
 }
 
-const matchFullName = (rawName: string): INameGroups | null => {
+const matchFullName = (rawName: string): NameGroups | null => {
   const match = rawName.match(namePattern)
   const { debugNames } = config.runner
   if (!match) {
@@ -60,7 +60,7 @@ const matchFullName = (rawName: string): INameGroups | null => {
     }
     return null
   }
-  const { name, season, ep, type, epTitle } = match.groups as INameGroups
+  const { name, season, ep, type, epTitle } = match.groups as NameGroups
   const result = { name, season, ep, type, epTitle }
   if (debugNames) {
     log('name %o', rawName, filterObjValues(result))
@@ -71,7 +71,7 @@ const matchFullName = (rawName: string): INameGroups | null => {
 const makeFullEp = (ep: string, season?: string): string =>
   !season ? ep : `S${season.padStart(2, '0')}E${ep.padStart(2, '0')}`
 
-export default class WatchCartoonOnline implements IProvider {
+export default class WatchCartoonOnline implements Provider {
   public url: string
   public base: string
   public schema: ScrapeOptions
@@ -88,7 +88,7 @@ export default class WatchCartoonOnline implements IProvider {
   public flatten({
     data: { items },
   }: {
-    data: { items: ISchemaItem[] }
+    data: { items: SchemaItem[] }
   }): Item[] {
     const time = new Date()
     return items

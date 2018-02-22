@@ -3,21 +3,21 @@ import knex from 'knex'
 import toml from 'toml'
 import { IProviderConfig } from './Provider'
 
-export interface IRunnerOpts {
+export interface RunnerOpts {
   userAgent: string
   dryRun: boolean
   debugItems: boolean
   debugNames: boolean
 }
 
-export interface IConfig {
+export interface Config {
   db: {
     url: string
   }
-  runner: IRunnerOpts
+  runner: RunnerOpts
   providers: IProviderConfig
 }
 
-export const config: IConfig = toml.parse(
+export const config: Config = toml.parse(
   fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`)
 )

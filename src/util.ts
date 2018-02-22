@@ -2,11 +2,7 @@ import makeDebug from 'debug'
 import FormData from 'form-data'
 import knex from 'knex'
 import { config } from './Config'
-import {
-  IProviderConfig,
-  IProviderConstructor,
-  IProviderData,
-} from './Provider'
+import { ProviderConfig, ProviderConstructor, ProviderData } from './Provider'
 
 // tslint:disable-next-line:no-var-requires
 const { name: packageName }: { name: string } = require(`../package.json`)
@@ -24,19 +20,19 @@ export const getDb = (url = config.db.url): knex =>
   })
 
 const parseProviders = (
-  providers: IProviderConfig
-): Array<[string, IProviderData]> => Object.entries(providers)
+  providers: ProviderConfig
+): Array<[string, ProviderData]> => Object.entries(providers)
 
 const providerName = (name: string): string => `${__dirname}/providers/${name}`
 
-export interface IProviderConstructorData {
-  constructors: IProviderConstructor[]
-  providerConfig: IProviderConfig
+export interface ProviderConstructorData {
+  constructors: ProviderConstructor[]
+  providerConfig: ProviderConfig
 }
 
 export const getProviderConstructors = async (
   providers = parseProviders(config.providers)
-): Promise<IProviderConstructorData> => {
+): Promise<ProviderConstructorData> => {
   const modules = await Promise.all(
     providers.map(([name]) => import(providerName(name)))
   )
@@ -58,22 +54,22 @@ export const range = function*(a: number, b: number): IterableIterator<number> {
   }
 }
 
-interface IFormDataPrivate {
+interface FormDataPrivate {
   _lastBoundary(): string
   _multiPartHeader(a: string, b: string | number, c: object): string
 }
 
-interface IFormDataPrivateConstructor {
+interface FormDataPrivateConstructor {
   LINE_BREAK: string
 }
 
-const FormDataPrivate = (FormData as any) as IFormDataPrivateConstructor
+const FormDataPrivate = (FormData as any) as FormDataPrivateConstructor
 
 export const buildFormBody = (
   formData: FormData,
   fields: { [key: string]: string | number }
 ): string => {
-  const formDataPrivate = (formData as any) as IFormDataPrivate
+  const formDataPrivate = (formData as any) as FormDataPrivate
   return (
     Object.entries(fields)
       .map(([field, value]) =>

@@ -31,7 +31,7 @@ const schema: ScrapeOptions = {
   },
 }
 
-export interface ISchemaItem {
+export interface SchemaItem {
   group: string
   key: string
   time: Date
@@ -57,7 +57,7 @@ export default class OtakuStream implements Provider {
   public flatten({
     data: { items },
   }: {
-    data: { items: ISchemaItem[] }
+    data: { items: SchemaItem[] }
   }): Item[] {
     return items
       .filter(({ episode }) => episode)
