@@ -4,5 +4,5 @@ export default interface Item {
   readonly source: string
   readonly time: Date
   readonly name: string
-  readonly data: Object
+  readonly data: object
 }

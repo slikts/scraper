@@ -1,13 +1,13 @@
-import Runner from './Runner'
+import { config } from './Config'
 import { ProviderConstructor } from './Provider'
+import Runner from './Runner'
 import {
-  log,
   error,
   getDb,
   getProviderConstructors,
-  ProviderConstructorData,
+  IProviderConstructorData,
+  log,
 } from './util'
-import { config } from './Config'
 
 log(`config %o`, config)
 
@@ -16,8 +16,8 @@ const main = async (db = getDb()) => {
   for (const Provider of constructors) {
     try {
       await new Runner({
-        provider: new Provider(providerConfig[Provider.name]),
         db,
+        provider: new Provider(providerConfig[Provider.name]),
         ...config.runner,
       }).run()
     } catch (err) {

@@ -1,37 +1,37 @@
-import Provider from '../Provider'
-import { log, parseEp, range, buildFormBody } from '../util'
+import { ScrapeOptions } from '@slikts/scrape-it'
 import { parseDate } from 'chrono-node'
 import FormData from 'form-data'
-import Item from '../Item'
-import { ScrapeOptions } from '@slikts/scrape-it'
 import { config } from '../Config'
+import Item from '../Item'
+import Provider from '../Provider'
+import { buildFormBody, log, parseEp, range } from '../util'
 
 const schema: ScrapeOptions = {
   items: {
-    listItem: `.ep-box`,
     data: {
+      episode: {
+        convert: parseEp,
+        selector: `.ep-no`,
+      },
       group: `.name`,
       key: {
-        selector: `.fa-play`,
         attr: `href`,
-      },
-      time: {
-        selector: `.date_homepage`,
-        convert: parseDate,
+        selector: `.fa-play`,
       },
       seriesUrl: {
-        selector: `.eh-inner .fa-file-text-o`,
         attr: `href`,
+        selector: `.eh-inner .fa-file-text-o`,
       },
-      episode: {
-        selector: `.ep-no`,
-        convert: parseEp,
+      time: {
+        convert: parseDate,
+        selector: `.date_homepage`,
       },
     },
+    listItem: `.ep-box`,
   },
 }
 
-export interface SchemaItem {
+export interface ISchemaItem {
   group: string
   key: string
   time: Date
@@ -40,10 +40,10 @@ export interface SchemaItem {
 }
 
 export default class OtakuStream implements Provider {
-  url: string
-  base: string
-  schema: ScrapeOptions
-  maxPages: number
+  public url: string
+  public base: string
+  public schema: ScrapeOptions
+  public maxPages: number
   constructor({
     base = `https://otakustream.tv/api/tools.php`,
     maxPages = 3,
@@ -54,23 +54,27 @@ export default class OtakuStream implements Provider {
     this.schema = schema
   }
 
-  flatten({ data: { items } }: { data: { items: SchemaItem[] } }): Item[] {
+  public flatten({
+    data: { items },
+  }: {
+    data: { items: ISchemaItem[] }
+  }): Item[] {
     return items
       .filter(({ episode }) => episode)
       .map(({ group, key, time, episode, seriesUrl }) => ({
-        key,
-        time,
-        group,
         data: {
           episode,
           seriesUrl,
         },
-        source: this.constructor.name,
+        group,
+        key,
         name: `${group} ${episode}`,
+        source: this.constructor.name,
+        time,
       }))
   }
 
-  *pages() {
+  public *pages() {
     for (const page of range(0, 2)) {
       const formData = new FormData()
       const formBody = buildFormBody(formData, {
@@ -79,15 +83,15 @@ export default class OtakuStream implements Provider {
       })
 
       yield {
-        url: this.base,
+        data: formBody,
         headers: {
-          'x-requested-with': `XMLHttpRequest`,
           origin: `https://otakustream.tv`,
           referer: `https://otakustream.tv/`,
+          'x-requested-with': `XMLHttpRequest`,
           ...formData.getHeaders(),
         },
-        // method: `POST`,
-        // data: formBody,
+        method: `POST`,
+        url: this.base,
       }
     }
   }

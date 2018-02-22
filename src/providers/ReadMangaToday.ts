@@ -1,27 +1,24 @@
-import Provider, { Page } from '../Provider'
-import { log, range, parseEp } from '../util'
 import { ScrapeOptions } from '@slikts/scrape-it'
+import Provider, { Page } from '../Provider'
+import { log, parseEp, range } from '../util'
 
 const itemSchema = {
-  listItem: `dd a`,
   data: {
+    chapter: {
+      convert: parseEp,
+      how: `html`,
+    },
     url: {
       attr: `href`,
     },
-    chapter: {
-      how: `html`,
-      convert: parseEp,
-    },
   },
+  listItem: `dd a`,
 }
 
 const titleSchema: ScrapeOptions = {
   titles: {
-    listItem: `.manga_updates dl`,
     data: {
-      name: `.manga_info`,
       date: {
-        selector: `.time`,
         convert: (x: string) =>
           new Date(
             x
@@ -29,28 +26,31 @@ const titleSchema: ScrapeOptions = {
               .reverse()
               .join(`-`)
           ),
+        selector: `.time`,
       },
       items: itemSchema,
+      name: `.manga_info`,
     },
+    listItem: `.manga_updates dl`,
   },
 }
 
-export interface SchemaTitle {
+export interface ISchemaTitle {
   name: string
   date: Date
-  items: SchemaItem[]
+  items: ISchemaItem[]
 }
 
-export interface SchemaItem {
+export interface ISchemaItem {
   url: string
   chapter: number
 }
 
 export default class ReadMangaToday implements Provider {
-  url: string
-  base: string
-  schema: ScrapeOptions
-  maxPages: number
+  public url: string
+  public base: string
+  public schema: ScrapeOptions
+  public maxPages: number
   constructor({
     base = `https://www.readmng.com/latest-releases`,
     maxPages = 3,
@@ -61,24 +61,24 @@ export default class ReadMangaToday implements Provider {
     this.maxPages = maxPages
   }
 
-  flatten({ data: { titles } }: { data: { titles: SchemaTitle[] } }) {
+  public flatten({ data: { titles } }: { data: { titles: ISchemaTitle[] } }) {
     return titles
       .map(({ name, date, items }) =>
         items.map(({ url, chapter }) => ({
-          key: `${url}/all-pages`,
-          time: date,
-          group: name,
           data: {
             chapter,
           },
-          source: this.constructor.name,
+          group: name,
+          key: `${url}/all-pages`,
           name: `${name} ${chapter}`,
+          source: this.constructor.name,
+          time: date,
         }))
       )
       .reduce((a, b) => a.concat(b), [])
   }
 
-  *pages() {
+  public *pages() {
     const makeUrl = (n: number) => ({
       url: `${this.base}${n > 1 ? `/${n}` : ``}`,
     })

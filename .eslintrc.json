@@ -1,8 +1,12 @@
 {
-  "parser": "babel-eslint",
+  "parser": "typescript-eslint-parser",
   "extends": ["@slikts/prettier"],
   "rules": {
     "no-restricted-syntax": 0,
     "no-await-in-loop": 0
+  },
+  "plugins": [],
+  "parserOptions": {
+    "sourceType": "module"
   }
 }

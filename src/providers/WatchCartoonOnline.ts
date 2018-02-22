@@ -1,44 +1,44 @@
-import Provider from '../Provider'
-import {
-  log,
-  error,
-  parseEp,
-  range,
-  buildFormBody,
-  filterObjValues,
-  truthy,
-} from '../util'
+import { ScrapeOptions } from '@slikts/scrape-it'
 import { parseDate } from 'chrono-node'
 import FormData from 'form-data'
-import Item from '../Item'
-import { ScrapeOptions } from '@slikts/scrape-it'
 import { AllHtmlEntities as Entities } from 'html-entities'
 import { config } from '../Config'
+import Item from '../Item'
+import IProvider from '../Provider'
+import {
+  buildFormBody,
+  error,
+  filterObjValues,
+  log,
+  parseEp,
+  range,
+  truthy,
+} from '../util'
 
 const schema: ScrapeOptions = {
   items: {
-    listItem: `.menulast a`,
     data: {
-      key: {
-        attr: 'href',
-      },
       fullName: {
         how: 'html',
       },
+      key: {
+        attr: 'href',
+      },
     },
+    listItem: `.menulast a`,
   },
 }
 const entities = new Entities()
 const doubleDecode = (a: string): string => entities.decode(entities.decode(a))
 
-export interface SchemaItem {
+export interface ISchemaItem {
   key: string
   fullName: string
 }
 
 const namePattern = /^(?<name>.+?)(?: Season (?<season>\d+))?( Episode (?<ep>\d+))( English (?<type>Subbed|Dubbed))?( - (?<epTitle>.+))?$/
 
-interface NameGroups {
+interface INameGroups {
   [key: string]: any
   name: string
   season?: string
@@ -47,11 +47,11 @@ interface NameGroups {
   epTitle?: string
 }
 
-interface NameMatch extends RegExpMatchArray {
-  groups: NameGroups
+interface INameMatch extends RegExpMatchArray {
+  groups: INameGroups
 }
 
-const matchFullName = (rawName: string): NameGroups | null => {
+const matchFullName = (rawName: string): INameGroups | null => {
   const match = rawName.match(namePattern)
   const { debugNames } = config.runner
   if (!match) {
@@ -60,7 +60,7 @@ const matchFullName = (rawName: string): NameGroups | null => {
     }
     return null
   }
-  const { name, season, ep, type, epTitle } = <NameGroups>match.groups
+  const { name, season, ep, type, epTitle } = match.groups as INameGroups
   const result = { name, season, ep, type, epTitle }
   if (debugNames) {
     log('name %o', rawName, filterObjValues(result))
@@ -71,11 +71,11 @@ const matchFullName = (rawName: string): NameGroups | null => {
 const makeFullEp = (ep: string, season?: string): string =>
   !season ? ep : `S${season.padStart(2, '0')}E${ep.padStart(2, '0')}`
 
-export default class WatchCartoonOnline implements Provider {
-  url: string
-  base: string
-  schema: ScrapeOptions
-  maxPages: number
+export default class WatchCartoonOnline implements IProvider {
+  public url: string
+  public base: string
+  public schema: ScrapeOptions
+  public maxPages: number
   constructor({
     base = `https://www.watchcartoononline.io/last-50-recent-release`,
   } = {}) {
@@ -85,33 +85,35 @@ export default class WatchCartoonOnline implements Provider {
     this.schema = schema
   }
 
-  flatten({ data: { items } }: { data: { items: SchemaItem[] } }): Item[] {
+  public flatten({
+    data: { items },
+  }: {
+    data: { items: ISchemaItem[] }
+  }): Item[] {
     const time = new Date()
     return items
       .map(({ key, fullName }) => ({
-        key,
         fullName: doubleDecode(fullName),
+        key,
       }))
       .map(({ key, fullName }) => ({
-        key,
         fullName,
+        key,
         nameMatches: matchFullName(fullName),
       }))
       .filter(({ nameMatches }) => nameMatches)
       .map(({ key, fullName, nameMatches }) => {
         const { name, season, ep, type, epTitle } = nameMatches!
         return {
-          key,
-          time,
-          group: [name, type].filter(truthy).join(' '),
           data: filterObjValues({
-            fullName,
             ep,
+            epTitle,
+            fullName,
             season,
             type,
-            epTitle,
           }),
-          source: this.constructor.name,
+          group: [name, type].filter(truthy).join(' '),
+          key,
           name: [
             name,
             type,
@@ -120,19 +122,21 @@ export default class WatchCartoonOnline implements Provider {
           ]
             .filter(truthy)
             .join(' '),
+          source: this.constructor.name,
+          time,
         }
       })
   }
 
-  *pages() {
+  public *pages() {
     for (const page of range(0, 2)) {
       yield {
-        url: this.base,
         headers: {
-          'x-requested-with': `XMLHttpRequest`,
           origin: `https://www.watchcartoononline.com`,
           referer: `https://www.watchcartoononline.com/`,
+          'x-requested-with': `XMLHttpRequest`,
         },
+        url: this.base,
       }
     }
   }

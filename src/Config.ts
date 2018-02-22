@@ -1,25 +1,23 @@
-import toml from 'toml'
-import knex from 'knex'
 import fs from 'fs'
-import { ProviderConfig } from './Provider'
+import knex from 'knex'
+import toml from 'toml'
+import { IProviderConfig } from './Provider'
 
-export namespace Config {
-  export interface RunnerOpts {
-    userAgent: string
-    dryRun: boolean
-    debugItems: boolean
-    debugNames: boolean
-  }
+export interface IRunnerOpts {
+  userAgent: string
+  dryRun: boolean
+  debugItems: boolean
+  debugNames: boolean
 }
 
-export interface Config {
+export interface IConfig {
   db: {
     url: string
   }
-  runner: Config.RunnerOpts
-  providers: ProviderConfig
+  runner: IRunnerOpts
+  providers: IProviderConfig
 }
 
-export const config: Config = toml.parse(
+export const config: IConfig = toml.parse(
   fs.readFileSync(`${__dirname}/../config/config.toml`, `utf8`)
 )

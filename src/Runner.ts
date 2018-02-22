@@ -1,18 +1,18 @@
 import scrapeIt from '@slikts/scrape-it'
-import { log, error } from './util'
-import { config, Config } from './Config'
-import Provider from './Provider'
-import knex from 'knex'
-import Item from './Item'
 import fs from 'fs'
+import knex from 'knex'
+import { config, IConfig, IRunnerOpts } from './Config'
+import Item from './Item'
+import Provider from './Provider'
+import { error, log } from './util'
 
-export interface FetchedItems {
+export interface IFetchedItems {
   items: Item[]
   url: string
 }
 
-interface ScrapeResult {
-  data: Object
+interface IScrapeResult {
+  data: object
   response: {
     headers: { [key: string]: string }
     statusCode: number
@@ -25,35 +25,34 @@ interface ScrapeResult {
 const logResultError = ({
   response: { headers, statusCode, statusMessage, fetchedUrls },
   body,
-}: ScrapeResult): void =>
+}: IScrapeResult): void =>
+  // tslint:disable-next-line:no-console
   console.error(
     JSON.stringify(
       {
+        body,
         fetchedUrls,
         headers,
         statusCode,
         statusMessage,
-        body,
       },
       null,
       2
     )
   )
 
-export namespace Runner {
-  export interface Opts extends Config.RunnerOpts {
-    readonly provider: Provider
-    readonly db: knex
-  }
+export interface IOpts extends IRunnerOpts {
+  readonly provider: Provider
+  readonly db: knex
 }
 
 export default class Runner {
-  opts: Runner.Opts
-  constructor(opts: Runner.Opts) {
+  public opts: IOpts
+  constructor(opts: IOpts) {
     this.opts = opts
   }
 
-  async run(): Promise<void> {
+  public async run(): Promise<void> {
     await this.registerSource()
     for await (const { items, url } of this.fetchItems()) {
       if (this.opts.dryRun) {
@@ -68,13 +67,13 @@ export default class Runner {
     }
   }
 
-  async *fetchItems(): AsyncIterableIterator<FetchedItems> {
+  public async *fetchItems(): AsyncIterableIterator<IFetchedItems> {
     const { provider, provider: { schema } } = this.opts
     const gen = provider.pages()
     let pageOpts = gen.next().value
     for (;;) {
       log(`fetching %o`, pageOpts.url)
-      const result = <ScrapeResult>await scrapeIt(
+      const result = (await scrapeIt(
         {
           ...pageOpts,
           headers: {
@@ -83,7 +82,7 @@ export default class Runner {
           },
         },
         schema
-      )
+      )) as IScrapeResult
       if (this.opts.debugItems) {
         log('items %o', result.data)
       }
@@ -105,7 +104,7 @@ export default class Runner {
     }
   }
 
-  async registerSource(): Promise<void> {
+  public async registerSource(): Promise<void> {
     const { opts, opts: { db } } = this
     const { url, constructor: { name } } = opts.provider
     const exists = !!(await db(`source`).where(`name`, name)).length
@@ -118,7 +117,7 @@ export default class Runner {
     }
   }
 
-  async save(items: Item[], url: string): Promise<number> {
+  public async save(items: Item[], url: string): Promise<number> {
     const tableName = `item`
     const keys = items.map(({ key }) => key)
     const { db } = this.opts
