@@ -4,6 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "@slikts/eslint-config-prettier": "^4.0.0",
     "@slikts/scrape-it": "^5.0.3",
     "@slikts/tsconfig": "^1.0.1",
     "@types/cheerio": "^0.22.7",
@@ -16,8 +17,10 @@
     "chrono-node": "^1.3.5",
     "debug": "^3.1.0",
     "eslint-plugin-prettier": "^2.5.0",
+    "feedparser-promised": "^1.5.0",
     "form-data": "^2.3.2",
     "html-entities": "^1.2.1",
+    "ix": "^2.3.5",
     "knex": "^0.14.2",
     "osmosis": "^1.1.6",
     "pg": "^7.4.1",
@@ -28,7 +31,7 @@
     "typescript": "^2.7.2"
   },
   "scripts": {
-    "test": "node --harmony_async_iteration node_modules/.bin/ava",
+    "test": "node node_modules/.bin/ava",
     "main": "node --harmony -r ts-node/register src/main.ts",
     "debug-watch": "DEBUG=scraper nodemon --harmony -r ts-node/register src/main.ts",
     "deploy": "git push kaste master"

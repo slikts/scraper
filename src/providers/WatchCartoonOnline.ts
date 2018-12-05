@@ -4,12 +4,13 @@ import FormData from 'form-data'
 import { AllHtmlEntities as Entities } from 'html-entities'
 import { config } from '../Config'
 import Item from '../Item'
-import Provider from '../Provider'
+import { ScrapeProvider } from '../Provider'
 import {
   buildFormBody,
   error,
   filterObjValues,
   log,
+  makeFullEp,
   parseEp,
   range,
   truthy,
@@ -68,14 +69,11 @@ const matchFullName = (rawName: string): NameGroups | null => {
   return result
 }
 
-const makeFullEp = (ep: string, season?: string): string =>
-  !season ? ep : `S${season.padStart(2, '0')}E${ep.padStart(2, '0')}`
-
-export default class WatchCartoonOnline implements Provider {
-  public url: string
-  public base: string
-  public schema: ScrapeOptions
-  public maxPages: number
+export default class WatchCartoonOnline implements ScrapeProvider {
+  readonly url: string
+  readonly base: string
+  readonly schema: ScrapeOptions
+  readonly maxPages: number
   constructor({
     base = `https://www.watchcartoononline.io/last-50-recent-release`,
   } = {}) {
@@ -85,7 +83,7 @@ export default class WatchCartoonOnline implements Provider {
     this.schema = schema
   }
 
-  public flatten({
+  flatten({
     data: { items },
   }: {
     data: { items: SchemaItem[] }
@@ -128,13 +126,12 @@ export default class WatchCartoonOnline implements Provider {
       })
   }
 
-  public *pages() {
+  *pages() {
     for (const page of range(0, 2)) {
       yield {
         headers: {
           origin: `https://www.watchcartoononline.com`,
           referer: `https://www.watchcartoononline.com/`,
-          'x-requested-with': `XMLHttpRequest`,
         },
         url: this.base,
       }

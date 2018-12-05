@@ -1,5 +1,5 @@
 import { ScrapeOptions } from '@slikts/scrape-it'
-import Provider, { Page } from '../Provider'
+import { Page, ScrapeProvider } from '../Provider'
 import { log, parseEp, range } from '../util'
 
 const itemSchema = {
@@ -46,11 +46,11 @@ export interface SchemaItem {
   chapter: number
 }
 
-export default class ReadMangaToday implements Provider {
-  public url: string
-  public base: string
-  public schema: ScrapeOptions
-  public maxPages: number
+export default class ReadMangaToday implements ScrapeProvider {
+  readonly url: string
+  readonly base: string
+  readonly schema: ScrapeOptions
+  readonly maxPages: number
   constructor({
     base = `https://www.readmng.com/latest-releases`,
     maxPages = 3,
@@ -61,7 +61,7 @@ export default class ReadMangaToday implements Provider {
     this.maxPages = maxPages
   }
 
-  public flatten({ data: { titles } }: { data: { titles: SchemaTitle[] } }) {
+  flatten({ data: { titles } }: { data: { titles: SchemaTitle[] } }) {
     return titles
       .map(({ name, date, items }) =>
         items.map(({ url, chapter }) => ({
@@ -78,7 +78,7 @@ export default class ReadMangaToday implements Provider {
       .reduce((a, b) => a.concat(b), [])
   }
 
-  public *pages() {
+  *pages() {
     const makeUrl = (n: number) => ({
       url: `${this.base}${n > 1 ? `/${n}` : ``}`,
     })

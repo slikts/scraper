@@ -2,7 +2,12 @@ import makeDebug from 'debug'
 import FormData from 'form-data'
 import knex from 'knex'
 import { config } from './Config'
-import { ProviderConfig, ProviderConstructor, ProviderData } from './Provider'
+import {
+  ProviderConfig,
+  ProviderConstructor,
+  ProviderData,
+  ProviderGroups,
+} from './Provider'
 
 // tslint:disable-next-line:no-var-requires
 const { name: packageName }: { name: string } = require(`../package.json`)
@@ -18,29 +23,6 @@ export const getDb = (url = config.db.url): knex =>
     client: `pg`,
     connection: url,
   })
-
-const parseProviders = (
-  providers: ProviderConfig
-): Array<[string, ProviderData]> => Object.entries(providers)
-
-const providerName = (name: string): string => `${__dirname}/providers/${name}`
-
-export interface ProviderConstructorData {
-  constructors: ProviderConstructor[]
-  providerConfig: ProviderConfig
-}
-
-export const getProviderConstructors = async (
-  providers = parseProviders(config.providers)
-): Promise<ProviderConstructorData> => {
-  const modules = await Promise.all(
-    providers.map(([name]) => import(providerName(name)))
-  )
-  return {
-    constructors: modules.map(module => module.default),
-    providerConfig: config.providers,
-  }
-}
 
 export const onlyNumber = (a: number): number | null =>
   Number.isNaN(a) ? null : a
@@ -94,3 +76,22 @@ export const filterObjValues = <T>(
 export const id = <T>(a: T): T => a
 
 export const truthy = <T>(a: T): boolean => !!a
+
+export const makeFullEp = (ep: string, season?: string): string =>
+  !season ? ep : `S${season.padStart(2, '0')}E${ep.padStart(2, '0')}`
+
+const mapBack = async function*<T, K>(
+  p: (a: T) => K,
+  seed: T,
+  it: AsyncIterator<T>
+) {
+  let last = seed
+  while (true) {
+    const result = await it.next(p(last))
+    if (result.done) {
+      break
+    }
+    last = result.value
+    yield last
+  }
+}

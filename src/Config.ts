@@ -1,7 +1,7 @@
 import fs from 'fs'
 import knex from 'knex'
 import toml from 'toml'
-import { ProviderConfig } from './Provider'
+import { ProviderConfigGroups } from './Provider'
 
 export interface RunnerOpts {
   userAgent: string
@@ -15,7 +15,7 @@ export interface Config {
     url: string
   }
   runner: RunnerOpts
-  providers: ProviderConfig
+  providers: ProviderConfigGroups
 }
 
 export const config: Config = toml.parse(
